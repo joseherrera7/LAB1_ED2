@@ -2,35 +2,40 @@ package com.ed2.joseherrera.lab1_ed2.Huffman;
 
 public class Nodo {
 
-    private String letra;
-    private Double porcentaje;
-    private int cifrado;
+    private Character letra;
+
+
+
+    private int freq;
+    private String cifrado;
     private  Nodo derecho;
     private Nodo izquierdo;
 
 
 
-    public String getLetra() {
+
+    public Character getLetra() {
         return letra;
     }
 
-    public void setLetra(String letra) {
+    public void setLetra(Character letra) {
         this.letra = letra;
     }
 
-    public double getPorcentaje() {
-        return porcentaje;
+
+    public int getFreq() {
+        return freq;
     }
 
-    public void setPorcentaje(double porcentaje) {
-        this.porcentaje = porcentaje;
+    public void setFreq(int freq) {
+        this.freq = freq;
     }
 
-    public int getCifrado() {
+    public String getCifrado() {
         return cifrado;
     }
 
-    public void setCifrado(int cifrado) {
+    public void setCifrado(String cifrado) {
         this.cifrado = cifrado;
     }
 
