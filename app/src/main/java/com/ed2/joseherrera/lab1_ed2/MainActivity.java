@@ -2,6 +2,7 @@ package com.ed2.joseherrera.lab1_ed2;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import  android.content.Intent;
+import android.view.View;
+import android.widget.Button;
+
 import com.ed2.joseherrera.lab1_ed2.Huffman.Huffman;
 import com.ed2.joseherrera.lab1_ed2.Huffman.Nodo;
 import android.Manifest.*;
@@ -21,28 +25,105 @@ import android.support.v4.content.*;
 import android.support.v4.app.*;
 import android.content.pm.*;
 import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.PriorityQueue;
+import java.util.Scanner;
+import android.view.View.OnClickListener;
+import java.util.TreeMap;
+
 public class MainActivity extends AppCompatActivity {
 private EditText nombre;
 private EditText ruta;
 private Button comprimir;
     private static final int SOLICITUD_PERMISO_CALL_PHONE = 1;
- @Override
+
+    private Button btnCargarArchivo;
+    String entry;
+    String prueba="";
+    String nArchivo = "data.txt";
+    Context ctx = this;
+    FileOutputStream fos;
+    FileInputStream fis;
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
+        String FILENAME = "data.txt";
+        String string = "Llueve en este poema\n" +
+                "Eduardo Carranza.\n" +
+                "Llueve. La tarde es una\n" +
+                "hoja de niebla. Llueve.\n" +
+                "La tarde está mojada\n" +
+                "de tu misma tristeza.\n" +
+                "A veces viene el aire\n" +
+                "con su canción. A veces\n" +
+                "Siento el alma apretada\n" +
+                "contra tu voz ausente.\n" +
+                "Llueve. Y estoy pensando\n" +
+                "en ti. Y estoy soñando.\n" +
+                "Nadie vendrá esta tarde\n" +
+                "a mi dolor cerrado.\n" +
+                "Nadie. Solo tu ausencia\n" +
+                "que me duele en las horas.\n" +
+                "Mañana tu presencia regresará en la rosa.\n" +
+                "Yo pienso cae la lluvia\n" +
+                "nunca como las frutas.\n" +
+                "Niña como las frutas,\n" +
+                "grata como una fiesta\n" +
+                "hoy esta atardeciendo\n" +
+                "tu nombre en mi poema.\n" +
+                "A veces viene el agua\n" +
+                "a mirar la ventana\n" +
+                "Y tú no estás\n" +
+                "A veces te presiento cercana.\n" +
+                "Humildemente vuelve\n" +
+                "tu despedida triste.\n" +
+                "Humildemente y todo\n" +
+                "humilde: los jazmines\n" +
+                "los rosales del huerto\n" +
+                "y mi llanto en declive.\n" +
+                "Oh, corazón ausente:\n" +
+                "qué grande es ser humilde.";
+
+        FileOutputStream fos = null;
+        try {
+            if (openFileInput(FILENAME)!=null){
+            fos = openFileOutput(FILENAME, Context.MODE_APPEND);}
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            fos.write(string.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (ActivityCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
 
-     if (ActivityCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "1 Permiso Concedido", Toast.LENGTH_SHORT).show();
+
+        } else {
 
 
-         Toast.makeText(this, "1 Permiso Concedido", Toast.LENGTH_SHORT).show();
-
-     } else {
-
-
-         explicarUsoPermiso();
-         solicitarPermisoHacerLlamada();
-     }
+            explicarUsoPermiso();
+            solicitarPermisoHacerLlamada();
+        }
 
 
         nombre = (EditText) findViewById(R.id.nombre);
@@ -53,79 +134,56 @@ private Button comprimir;
                 "khgshdgsahdgskdhkj jhsgdsahdg" +
                 "dhsgdjsgad" +
                 "kjhjkhjk";
+        btnCargarArchivo =  (Button) findViewById(R.id.btnCargarDatos);
+        btnCargarArchivo.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
 
-String prueba="";
-      /*  Nodo letra1=new Nodo();
-        letra1.setPorcentaje(0.236);
-        letras.add(letra1);
+                entry = leerArchivo();
+                Huffman huffi=new Huffman(entry);
+                huffi.ejecutarHuffman();
+                prueba= huffi.escribirbinario(entry);
+            }
+        });
 
-        Nodo letra2=new Nodo();
-        letra2.setPorcentaje(0.963);
-        letras.add(letra2);
+        ArrayList<Nodo> letras=new ArrayList<Nodo>();
 
-        Nodo letra3=new Nodo();
-        letra3.setPorcentaje(0.321);
-        letras.add(letra3);
-
-        Nodo letra4=new Nodo();
-        letra4.setPorcentaje(0.896);
-        letras.add(letra4);
-
-        Nodo letra5=new Nodo();
-        letra5.setPorcentaje(0.520);
-        letras.add(letra5);
-
-        Nodo letra6=new Nodo();
-        letra6.setPorcentaje(0.210);
-        letras.add(letra6);
-
-        Nodo letra7=new Nodo();
-        letra7.setPorcentaje(0.120);
-        letras.add(letra7);
-
-        Nodo letra8=new Nodo();
-        letra8.setPorcentaje(0.239);
-        letras.add(letra8);
-
-        Nodo letra9=new Nodo();
-        letra9.setPorcentaje(0.520);
-        letras.add(letra9);
-
-        Nodo letra10=new Nodo();
-        letra10.setPorcentaje(0.100);
-        letras.add(letra10);
-
-        Nodo letra11=new Nodo();
-        letra11.setPorcentaje(0.756);
-        letras.add(letra11);
-
-        Nodo letra12=new Nodo();
-        letra12.setPorcentaje(0.963);
-        letras.add(letra12);
-
-        Nodo letra13=new Nodo();
-        letra13.setPorcentaje(0.211);
-        letras.add(letra13);
-
-        Nodo letra14=new Nodo();
-        letra14.setPorcentaje(0.236);
-        letras.add(letra14);*/
-
-      comprimir.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View view) {
+        comprimir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
 
 
 
 
-              Huffman huffi=new Huffman(entrada);
-              huffi.ejecutarHuffman();
-              ecribirhuffman( huffi.escribirbinario(entrada));
-          }
-      });
+                Huffman huffi=new Huffman(entrada);
+                huffi.ejecutarHuffman();
+                ecribirhuffman( huffi.escribirbinario(entrada));
+            }
+        });
 
 
+
+
+
+    }
+    public String leerArchivo(){
+        FileInputStream fis;
+        String content = "";
+        try {
+            fis = openFileInput(nArchivo);
+            byte[] input = new byte[fis.available()];
+            while (fis.read(input) != -1) {
+            }
+            content += new String(input);
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content;
     }
 
     private void explicarUsoPermiso() {
@@ -155,11 +213,11 @@ String prueba="";
     public void ecribirhuffman(String texto){
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root + ruta.getText());
-          myDir.mkdirs();
+        myDir.mkdirs();
         String fname = nombre.getText() + ".huff";
         File file = new File(myDir, fname);
         if(file.exists()) {
-          file.delete();
+            file.delete();
         }
 
         try
@@ -174,23 +232,6 @@ String prueba="";
         catch (Exception ex)
         {
             Log.e("Ficheros", "Error al escribir fichero en la memoria interna "+ex.getMessage());
-        }
-    }
-
-    public void leerhuffman(String texto){
-
-        try
-        {
-            OutputStreamWriter fout=
-                    new OutputStreamWriter(
-                            openFileOutput("archivito.txt", Context.MODE_WORLD_READABLE ));
-
-            fout.write(texto);
-            fout.close();
-        }
-        catch (Exception ex)
-        {
-            Log.e("Ficheros", "Error al escribir fichero en la memoria interna");
         }
     }
 }
