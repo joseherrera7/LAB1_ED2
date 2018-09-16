@@ -57,7 +57,22 @@ private Button comprimir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String FILENAME = "data.txt";
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        if (ActivityCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+
+
+            Toast.makeText(this, "1 Permiso Concedido", Toast.LENGTH_SHORT).show();
+
+        } else {
+
+
+            explicarUsoPermiso();
+            solicitarPermisoHacerLlamada();
+        }
+
+       String FILENAME = "data.txt";
         String string = "Llueve en este poema\n" +
                 "Eduardo Carranza.\n" +
                 "Llueve. La tarde es una\n" +
@@ -94,73 +109,42 @@ private Button comprimir;
                 "Oh, corazón ausente:\n" +
                 "qué grande es ser humilde.";
 
-        FileOutputStream fos = null;
+
         try {
-            if (openFileInput(FILENAME)!=null){
-            fos = openFileOutput(FILENAME, Context.MODE_APPEND);}
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
+
+                fos = openFileOutput(FILENAME, Context.MODE_WORLD_READABLE);
+
             fos.write(string.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
+
+
+
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        if (ActivityCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-
-
-            Toast.makeText(this, "1 Permiso Concedido", Toast.LENGTH_SHORT).show();
-
-        } else {
-
-
-            explicarUsoPermiso();
-            solicitarPermisoHacerLlamada();
-        }
-
-
         nombre = (EditText) findViewById(R.id.nombre);
         ruta = (EditText) findViewById(R.id.ruta);
-        comprimir=(Button)findViewById(R.id.button);
+
         final String entrada="hjdgashdgasdhsajg ashdjgsadhasgdjhs hgdasjhdgsajhdgsa jfdsajgdgsajhd hgsajdgdhsgd \n" +
                 "hdgsahdgasjhdgsajgdh\n" +
                 "khgshdgsahdgskdhkj jhsgdsahdg" +
                 "dhsgdjsgad" +
                 "kjhjkhjk";
         btnCargarArchivo =  (Button) findViewById(R.id.btnCargarDatos);
-        btnCargarArchivo.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
+        btnCargarArchivo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
                 entry = leerArchivo();
                 Huffman huffi=new Huffman(entry);
                 huffi.ejecutarHuffman();
-                prueba= huffi.escribirbinario(entry);
+                ecribirhuffman( huffi.escribirbinario(entry));
             }
         });
 
-        ArrayList<Nodo> letras=new ArrayList<Nodo>();
-
-        comprimir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+       // ArrayList<Nodo> letras=new ArrayList<Nodo>();
 
 
-
-
-
-                Huffman huffi=new Huffman(entrada);
-                huffi.ejecutarHuffman();
-                ecribirhuffman( huffi.escribirbinario(entrada));
-            }
-        });
 
 
 

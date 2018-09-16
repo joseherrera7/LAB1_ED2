@@ -143,7 +143,7 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
         }
     }
 
-    public void increment(Character c,int totalcharacters) {
+    public void increment(char c,int totalcharacters) {
         Integer Indexref = findIndexbyCharacter(c);
 
         if (Indexref == null) {
@@ -161,7 +161,7 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
     }
     }
 
-    private Integer findIndexbyCharacter(Character c){
+    private Integer findIndexbyCharacter(char c){
         Integer indextoreturn=null;
         for (int x=0;x<nodelist.size();x++){
             if(c==nodelist.get(x).getLetra()){
