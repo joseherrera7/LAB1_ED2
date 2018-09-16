@@ -1,16 +1,21 @@
 package com.ed2.joseherrera.lab1_ed2.Huffman;
+import android.content.Context;
 
+import android.util.Log;
+
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-
+import java.lang.*;
 public class Huffman {
 
     private ArrayList<Nodo> nodelist;
  private String texto;
 private Nodo arbol;
 private HashMap<Character,String> characterandbinary=new HashMap<>();
+    private ArrayList<Nodo> Letras=new ArrayList<Nodo>();
     public Huffman(String text) {
         texto=text;
 
@@ -65,19 +70,57 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
     public String escribirbinario(String text){
 
         String salida="";
+        String binarios="";
         tomarhojas(arbol);
 
         for (char c : text.toCharArray()) {
-           salida=salida+characterandbinary.get(c);
+           binarios=binarios+characterandbinary.get(c);
         }
+        for (Nodo x:Letras) {
+            salida=salida+x.getLetra()+","+String.valueOf(x.getFreq())+"-";
+        }
+        salida+="";
+        for (int i=0;i<binarios.length();i=i+8) {
+                if((i+8)>binarios.length()-1){
+                    salida= salida+ String.valueOf((char)calcularDecimal(Integer.valueOf(binarios.substring(i,binarios.length()))) ) ;
+
+
+                }else {
+                    salida= salida+ String.valueOf((char)calcularDecimal(Integer.valueOf(binarios.substring(i,i+8))) ) ;
+
+
+                }
+
+
+
+
+        }
+
+
+
+
+
         return salida;
     }
 
-    
+    private static int calcularDecimal(int binario){
+        int decimal = 0, exponente = 0;
+        int digito;
+        while(binario>0){
+            digito = binario%10;
+            decimal = decimal + digito * (int)Math.pow(2, exponente);
+            binario /= 10;
+            exponente++;
+        }
+        return decimal;
+    }
+
+
     public void tomarhojas(Nodo base){
         if(base.getIzquierdo()==null&&base.getDerecho()==null){
 
             characterandbinary.put(base.getLetra(),base.getCifrado());
+            Letras.add(base);
         }else{
 
             Nodo izquierdo= base.getIzquierdo();

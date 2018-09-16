@@ -1,28 +1,54 @@
 package com.ed2.joseherrera.lab1_ed2;
 
+import android.Manifest;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import  android.content.Intent;
 import com.ed2.joseherrera.lab1_ed2.Huffman.Huffman;
 import com.ed2.joseherrera.lab1_ed2.Huffman.Nodo;
-
-import java.util.ArrayList;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.PriorityQueue;
-import java.util.Scanner;
-import java.util.TreeMap;
-
+import android.Manifest.*;
+import java.io.OutputStreamWriter;
+import java.io.*;
+import java.security.acl.*;
+import android.os.Environment;
+import android.support.v4.content.*;
+import android.support.v4.app.*;
+import android.content.pm.*;
+import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
-    static int ASCII[] = new int[128];
-    @Override
+private EditText nombre;
+private EditText ruta;
+private Button comprimir;
+    private static final int SOLICITUD_PERMISO_CALL_PHONE = 1;
+ @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-        ArrayList<Nodo> letras=new ArrayList<Nodo>();
-        String entrada="hjdgashdgasdhsajg ashdjgsadhasgdjhs hgdasjhdgsajhdgsa jfdsajgdgsajhd hgsajdgdhsgd \n" +
+     if (ActivityCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+
+
+         Toast.makeText(this, "1 Permiso Concedido", Toast.LENGTH_SHORT).show();
+
+     } else {
+
+
+         explicarUsoPermiso();
+         solicitarPermisoHacerLlamada();
+     }
+
+
+        nombre = (EditText) findViewById(R.id.nombre);
+        ruta = (EditText) findViewById(R.id.ruta);
+        comprimir=(Button)findViewById(R.id.button);
+        final String entrada="hjdgashdgasdhsajg ashdjgsadhasgdjhs hgdasjhdgsajhdgsa jfdsajgdgsajhd hgsajdgdhsgd \n" +
                 "hdgsahdgasjhdgsajgdh\n" +
                 "khgshdgsahdgskdhkj jhsgdsahdg" +
                 "dhsgdjsgad" +
@@ -85,9 +111,86 @@ String prueba="";
         letra14.setPorcentaje(0.236);
         letras.add(letra14);*/
 
-        Huffman huffi=new Huffman(entrada);
-        huffi.ejecutarHuffman();
-       prueba= huffi.escribirbinario(entrada);
+      comprimir.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
 
+
+
+
+
+              Huffman huffi=new Huffman(entrada);
+              huffi.ejecutarHuffman();
+              ecribirhuffman( huffi.escribirbinario(entrada));
+          }
+      });
+
+
+    }
+
+    private void explicarUsoPermiso() {
+
+
+        //Este IF es necesario para saber si el usuario ha marcado o no la casilla [] No volver a preguntar
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission.WRITE_EXTERNAL_STORAGE)) {
+            Toast.makeText(this, "Se necesita del almacenamiento para guardar su archivo comprimido", Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
+
+    private void solicitarPermisoHacerLlamada() {
+
+
+        //Pedimos el permiso o los permisos con un cuadro de dialogo del sistema
+        ActivityCompat.requestPermissions(this,
+                new String[]{permission.WRITE_EXTERNAL_STORAGE},
+                SOLICITUD_PERMISO_CALL_PHONE);
+
+        Toast.makeText(this, "Porfavor concender permisos para almacenar en memoria", Toast.LENGTH_SHORT).show();
+
+
+    }
+
+    public void ecribirhuffman(String texto){
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root + ruta.getText());
+          myDir.mkdirs();
+        String fname = nombre.getText() + ".huff";
+        File file = new File(myDir, fname);
+        if(file.exists()) {
+          file.delete();
+        }
+
+        try
+        {
+
+
+            FileOutputStream stream = new FileOutputStream(file);
+            stream.write(texto.getBytes());
+            stream.flush();
+            stream.close();
+        }
+        catch (Exception ex)
+        {
+            Log.e("Ficheros", "Error al escribir fichero en la memoria interna "+ex.getMessage());
+        }
+    }
+
+    public void leerhuffman(String texto){
+
+        try
+        {
+            OutputStreamWriter fout=
+                    new OutputStreamWriter(
+                            openFileOutput("archivito.txt", Context.MODE_WORLD_READABLE ));
+
+            fout.write(texto);
+            fout.close();
+        }
+        catch (Exception ex)
+        {
+            Log.e("Ficheros", "Error al escribir fichero en la memoria interna");
+        }
     }
 }
