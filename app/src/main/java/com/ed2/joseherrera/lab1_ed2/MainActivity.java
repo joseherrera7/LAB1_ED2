@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         btnCargarArchivo.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                FileManager fileManager = null;
+
                 entry = leerArchivo();
                 Huffman huffi=new Huffman(entry);
                 huffi.ejecutarHuffman();
