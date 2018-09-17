@@ -1,6 +1,7 @@
 package com.ed2.joseherrera.lab1_ed2.Huffman;
 import android.content.Context;
 
+import android.os.Build;
 import android.util.Log;
 
 import java.io.OutputStreamWriter;
@@ -77,9 +78,9 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
            binarios=binarios+characterandbinary.get(c);
         }
         for (Nodo x:Letras) {
-            salida=salida+x.getLetra()+","+String.valueOf(x.getFreq())+"-";
+            salida=salida+x.getLetra()+"|||"+String.valueOf(x.getFreq())+"|||||";
         }
-        salida+="";
+
         for (int i=0;i<binarios.length();i=i+8) {
                 if((i+8)>binarios.length()-1){
                     salida= salida+ String.valueOf((char)calcularDecimal(Integer.valueOf(binarios.substring(i,binarios.length()))) ) ;
@@ -131,6 +132,124 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
 
     }
 
+    public String escribirdescomp(String text) {
+      nodelist=new ArrayList<>();
+       return descifrar(descomprimirhuffman(text));
+
+    }
+
+    public String descomprimirhuffman(String text){
+
+
+    String element=text.substring(0,3);
+    String binary="";
+        String [] parts;
+       parts=text.split("|||||");
+
+        for (int i=0;i<parts.length-1;i++){
+           Nodo nuevo=new Nodo();
+            String letraandfreq[];
+            letraandfreq=parts[i].split("|||");
+            nuevo.setFreq(Integer.parseInt(letraandfreq[1]));
+            nuevo.setLetra(letraandfreq[0].charAt(0));
+        }
+
+
+           Nodo raiz=new Nodo();
+        while (nodelist.size()!=1){
+
+            raiz= hacerarbol();
+
+        }
+        asignarcodigo(raiz,"");
+        arbol=raiz;
+
+        for (char c:parts[parts.length-1].toCharArray()) {
+            if(parts[parts.length-1].indexOf(c)==parts[parts.length-1].length()-1){
+               binary+= convertirASCII(c,true)   ;
+            }else{
+                binary+=convertirASCII(c,false)   ;
+            }
+
+        }
+        return binary;
+
+    }
+
+    public String descifrar(String binario){
+
+        String retorno="";
+        String ingreso="";
+        for (Character c:binario.toCharArray()) {
+
+
+                ingreso+=c;
+                if(contienea(ingreso)){
+
+                    retorno+=nodelist.get(findIndexbyBinary(ingreso)).getLetra();
+                    ingreso="";
+                }
+
+
+        }
+        return retorno;
+
+    }
+
+    public  boolean contienea(String binario){
+ boolean si=false;
+        for (Nodo nod : nodelist) {
+            if ( nod.getCifrado().equals(binario)) {
+               si= true;
+                break;
+            }
+        }
+        return si;
+    }
+
+
+
+    public static String obtenerBinario(int numero,boolean ultimo){
+        ArrayList<String> binario = new ArrayList<String>();
+        int resto;
+        String binarioString = "";
+
+        do{
+            resto = numero%2;
+            numero = numero/2;
+            binario.add(0, Integer.toString(resto));
+        }while(numero > 2);
+        binario.add(0, Integer.toString(numero));
+
+     if(ultimo){
+         for(int i = 0; i < binario.size(); i++){
+             binarioString += binario.get(i);
+         }
+     }else {
+         for(int i = 0; i < 8- binario.size(); i++){
+             binarioString += 0;
+         }
+
+         for(int i = 0; i < binario.size(); i++){
+             binarioString += binario.get(i);
+         }
+
+     }
+
+        return binarioString;
+    }
+
+
+
+
+    public String convertirASCII(char ascii,boolean ultimo){
+
+        int numero=Character.getNumericValue(ascii);
+        return  obtenerBinario(numero,ultimo);
+
+    }
+
+
     public void asignarcodigo(Nodo base,String cifradopadre){
 
         if(base.getIzquierdo()!=null&&base.getDerecho()!=null){
@@ -165,6 +284,17 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
         Integer indextoreturn=null;
         for (int x=0;x<nodelist.size();x++){
             if(c==nodelist.get(x).getLetra()){
+                indextoreturn=x;
+                break;
+            }
+        }
+        return indextoreturn;
+    }
+
+    private Integer findIndexbyBinary(String c){
+        Integer indextoreturn=null;
+        for (int x=0;x<nodelist.size();x++){
+            if(c==nodelist.get(x).getCifrado()){
                 indextoreturn=x;
                 break;
             }
