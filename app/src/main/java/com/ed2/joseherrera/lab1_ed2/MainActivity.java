@@ -100,7 +100,7 @@ private EditText ruta;
 
         try {
 
-                fos = openFileOutput(FILENAME, Context.MODE_WORLD_READABLE);
+                fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
 
             fos.write(string.getBytes());
 
