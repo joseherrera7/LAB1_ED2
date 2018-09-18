@@ -10,9 +10,16 @@ public class Nodo {
     private String cifrado;
     private  Nodo derecho;
     private Nodo izquierdo;
+  private int ordenaparicion;
 
+    public int getOrdenaparicion() {
 
+        return ordenaparicion;
+    }
 
+    public void setOrdenaparicion(int ordenaparicion) {
+        this.ordenaparicion = ordenaparicion;
+    }
 
     public Character getLetra() {
         return letra;
