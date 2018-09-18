@@ -50,7 +50,7 @@ private EditText ruta;
     private static final int SOLICITUD_PERMISO_CALL_PHONE = 1;
 
     private Button btnCargarArchivo;
-    private Button Descomprimir; Button buscarArchivo, comprimir; TextView contenido;
+    private Button Descomprimir; Button buscarArchivo; TextView contenido;
     String entry;
     String prueba="";
     String nArchivo = "data.txt";
