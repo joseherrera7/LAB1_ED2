@@ -13,6 +13,7 @@ import java.lang.*;
 public class Huffman {
 
     private ArrayList<Nodo> nodelist;
+    private ArrayList<Nodo> paraimprimir;
  private String texto;
 private Nodo arbol;
 private HashMap<Character,String> characterandbinary=new HashMap<>();
@@ -30,7 +31,15 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
 
                 Integer t1double=new Integer(t1.getFreq());
                 Integer t2double=new Integer(t2.getFreq());
-                return t1double.compareTo(t2double);
+               // if (t1double.compareTo(t2double)==0){
+                //  Integer t1aparicion=new Integer(t1.getOrdenaparicion());
+               //     Integer t2aparicion=new Integer(t2.getOrdenaparicion());
+                //    return t1aparicion.compareTo(t2aparicion);
+
+               /// }else {
+                   return t1double.compareTo(t2double);
+              //  }
+
             }
         });
 
@@ -39,23 +48,36 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
 
 
     private Nodo hacerarbol(){
-        sortlist();
+
+
+
+            sortlist();
         Nodo auxpadre=new Nodo();
         auxpadre.setDerecho(nodelist.remove(0));
         auxpadre.setIzquierdo(nodelist.remove(0));
 
         auxpadre.setFreq(auxpadre.getIzquierdo().getFreq()+auxpadre.getDerecho().getFreq());
-
+        auxpadre.setOrdenaparicion(0);
         nodelist.add(auxpadre);
-        sortlist();
+
+
+            sortlist();
+
         return  auxpadre;
 
     }
+    public void pasarparaimprimir(){
 
+        for (Nodo c:nodelist       ) {
+            paraimprimir.add(c);
+        }
+    }
     public void ejecutarHuffman(){
         nodelist=new ArrayList<>();
+        paraimprimir=new ArrayList<>();
         increment(texto);
         Nodo raiz=new Nodo();
+       pasarparaimprimir();
         while (nodelist.size()!=1){
 
            raiz= hacerarbol();
@@ -73,11 +95,26 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
         String salida="";
         String binarios="";
         tomarhojas(arbol);
+     Collections.sort(Letras,new Comparator<Nodo>() {
+    @Override
+    public int compare(Nodo nodo, Nodo t1) {
+       Integer nodoin=nodo.getFreq();
+       Integer t1in=t1.getFreq();
 
+       //if(nodoin.compareTo(t1in)==0){
+        //   Integer nodoaparicion=new Integer(nodo.getOrdenaparicion());
+        //   Integer t1aparicion=new Integer(t1.getOrdenaparicion());
+        //   return nodoaparicion.compareTo(t1aparicion);
+       //}else{
+           return nodoin.compareTo(t1in);
+       //}
+
+    }
+});
         for (char c : text.toCharArray()) {
            binarios=binarios+characterandbinary.get(c);
         }
-        for (Nodo x:Letras) {
+        for (Nodo x:paraimprimir) {
             salida=salida+x.getLetra()+"|||"+String.valueOf(x.getFreq())+"|||||";
         }
 
@@ -134,24 +171,26 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
 
     public String escribirdescomp(String text) {
       nodelist=new ArrayList<>();
+      characterandbinary=new HashMap<>();
+
        return descifrar(descomprimirhuffman(text));
 
     }
 
     public String descomprimirhuffman(String text){
 
-
-    String element=text.substring(0,3);
     String binary="";
         String [] parts;
-       parts=text.split("|||||");
+       parts=text.split("\\|\\|\\|\\|\\|");
 
         for (int i=0;i<parts.length-1;i++){
            Nodo nuevo=new Nodo();
             String letraandfreq[];
-            letraandfreq=parts[i].split("|||");
+            letraandfreq=parts[i].split("\\|\\|\\|");
             nuevo.setFreq(Integer.parseInt(letraandfreq[1]));
             nuevo.setLetra(letraandfreq[0].charAt(0));
+            nuevo.setOrdenaparicion(i);
+            nodelist.add(0,nuevo);
         }
 
 
@@ -161,22 +200,52 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
             raiz= hacerarbol();
 
         }
+
+
         asignarcodigo(raiz,"");
         arbol=raiz;
 
+        int i=0;
         for (char c:parts[parts.length-1].toCharArray()) {
-            if(parts[parts.length-1].indexOf(c)==parts[parts.length-1].length()-1){
+            if(parts[parts.length-1].endsWith(String.valueOf(c))&&(i==parts[parts.length-1].length())){
                binary+= convertirASCII(c,true)   ;
             }else{
                 binary+=convertirASCII(c,false)   ;
             }
+            i++;
 
         }
         return binary;
 
     }
 
+    public static Object  getKeyFromValue(HashMap hm, Object value) {
+        for (Object o : hm.keySet()) {
+            if (hm.get(o).equals(value)) {
+                return o;
+            }
+        }
+        return null;
+    }
+
     public String descifrar(String binario){
+        tomarhojas(arbol);
+        Collections.sort(Letras,new Comparator<Nodo>() {
+            @Override
+            public int compare(Nodo nodo, Nodo t1) {
+                Integer nodoin=nodo.getFreq();
+                Integer t1in=t1.getFreq();
+
+                //if(nodoin.compareTo(t1in)==0){
+                //   Integer nodoaparicion=new Integer(nodo.getOrdenaparicion());
+                //   Integer t1aparicion=new Integer(t1.getOrdenaparicion());
+                //   return nodoaparicion.compareTo(t1aparicion);
+                //}else{
+                return nodoin.compareTo(t1in);
+                //}
+
+            }
+        });
 
         String retorno="";
         String ingreso="";
@@ -184,9 +253,9 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
 
 
                 ingreso+=c;
-                if(contienea(ingreso)){
+                if(characterandbinary.containsValue(ingreso)){
 
-                    retorno+=nodelist.get(findIndexbyBinary(ingreso)).getLetra();
+                    retorno+=getKeyFromValue(characterandbinary,ingreso);
                     ingreso="";
                 }
 
@@ -196,16 +265,7 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
 
     }
 
-    public  boolean contienea(String binario){
- boolean si=false;
-        for (Nodo nod : nodelist) {
-            if ( nod.getCifrado().equals(binario)) {
-               si= true;
-                break;
-            }
-        }
-        return si;
-    }
+
 
 
 
@@ -214,12 +274,15 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
         int resto;
         String binarioString = "";
 
-        do{
+        while(numero > 0){
             resto = numero%2;
             numero = numero/2;
             binario.add(0, Integer.toString(resto));
-        }while(numero > 2);
-        binario.add(0, Integer.toString(numero));
+        }
+        if (binario.size()!=8){
+            binario.add(0,Integer.toString(numero));
+        }
+
 
      if(ultimo){
          for(int i = 0; i < binario.size(); i++){
@@ -244,7 +307,7 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
 
     public String convertirASCII(char ascii,boolean ultimo){
 
-        int numero=Character.getNumericValue(ascii);
+        int numero=(int) ascii;
         return  obtenerBinario(numero,ultimo);
 
     }
@@ -262,13 +325,14 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
         }
     }
 
-    public void increment(char c,int totalcharacters) {
+    public void increment(char c,int totalcharacters,int i) {
         Integer Indexref = findIndexbyCharacter(c);
 
         if (Indexref == null) {
            Nodo nuevo=new Nodo();
            nuevo.setFreq(1);
            nuevo.setLetra(c);
+           nuevo.setOrdenaparicion(i);
            nodelist.add(nuevo);
         }else{
             Nodo noderef = nodelist.get(Indexref);
@@ -304,8 +368,10 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
 
 
     public void increment(String text) {
+        int i=0;
         for (char c : text.toCharArray()) {
-            increment(c,text.length());
+            increment(c,text.length(),i);
+            i++;
         }
     }
 
