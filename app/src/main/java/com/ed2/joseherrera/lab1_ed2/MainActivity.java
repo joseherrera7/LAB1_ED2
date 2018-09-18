@@ -99,56 +99,7 @@ private EditText ruta;
             solicitarPermisoHacerLlamada();
         }
 
-       String FILENAME = "data.txt";
-        String string = "Llueve en este poema\n" +
-                "Eduardo Carranza.\n" +
-                "Llueve. La tarde es una\n" +
-                "hoja de niebla. Llueve.\n" +
-                "La tarde está mojada\n" +
-                "de tu misma tristeza.\n" +
-                "A veces viene el aire\n" +
-                "con su canción. A veces\n" +
-                "Siento el alma apretada\n" +
-                "contra tu voz ausente.\n" +
-                "Llueve. Y estoy pensando\n" +
-                "en ti. Y estoy soñando.\n" +
-                "Nadie vendrá esta tarde\n" +
-                "a mi dolor cerrado.\n" +
-                "Nadie. Solo tu ausencia\n" +
-                "que me duele en las horas.\n" +
-                "Mañana tu presencia regresará en la rosa.\n" +
-                "Yo pienso cae la lluvia\n" +
-                "nunca como las frutas.\n" +
-                "Niña como las frutas,\n" +
-                "grata como una fiesta\n" +
-                "hoy esta atardeciendo\n" +
-                "tu nombre en mi poema.\n" +
-                "A veces viene el agua\n" +
-                "a mirar la ventana\n" +
-                "Y tú no estás\n" +
-                "A veces te presiento cercana.\n" +
-                "Humildemente vuelve\n" +
-                "tu despedida triste.\n" +
-                "Humildemente y todo\n" +
-                "humilde: los jazmines\n" +
-                "los rosales del huerto\n" +
-                "y mi llanto en declive.\n" +
-                "Oh, corazón ausente:\n" +
-                "qué grande es ser humilde.";
 
-
-        try {
-
-                fos = openFileOutput(FILENAME, Context.MODE_WORLD_READABLE);
-
-            fos.write(string.getBytes());
-
-
-
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         nombre = (EditText) findViewById(R.id.nombre);
         ruta = (EditText) findViewById(R.id.ruta);
         nombredesc= (EditText) findViewById(R.id.nombredesco);
@@ -206,7 +157,7 @@ private EditText ruta;
         FileInputStream fis;
         String content = "";
         try {
-            fis = openFileInput(nArchivo);
+            fis = openFileInput(contenido.getText().toString());
             byte[] input = new byte[fis.available()];
             while (fis.read(input) != -1) {
             }
