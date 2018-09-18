@@ -3,6 +3,7 @@ package com.ed2.joseherrera.lab1_ed2;
 import android.Manifest;
 import android.content.Context;
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -49,7 +50,7 @@ private EditText ruta;
     private static final int SOLICITUD_PERMISO_CALL_PHONE = 1;
 
     private Button btnCargarArchivo;
-    private Button Descomprimir;
+    private Button Descomprimir; Button buscarArchivo, comprimir; TextView contenido;
     String entry;
     String prueba="";
     String nArchivo = "data.txt";
@@ -63,7 +64,29 @@ private EditText ruta;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Button btnCompresiones = (Button) findViewById(R.id.btnMisCompresiones);
+        buscarArchivo = (Button)findViewById(R.id.buttonBuscarArchivo);
+        contenido = (TextView)findViewById(R.id.textviewBuscarArchivo);
 
+        buscarArchivo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intento = new Intent()
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .setType("*/*")
+                        .setAction(Intent.ACTION_OPEN_DOCUMENT);
+
+                startActivityForResult(Intent.createChooser(intento, "Seleccione un archivo"), 123);
+            }
+        });
+
+        btnCompresiones.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intento =new Intent(MainActivity.this,MisCompresiones.class);
+                startActivity(intento);
+            }
+        });
         if (ActivityCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
 
@@ -247,4 +270,33 @@ private EditText ruta;
             Log.e("Ficheros", "Error al escribir fichero en la memoria interna "+ex.getMessage());
         }
     }
+    Uri archivo;
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 123 && resultCode == RESULT_OK){
+            archivo = data.getData();
+            Toast.makeText(this, archivo.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, archivo.getPath(), Toast.LENGTH_LONG).show();
+            try{
+                contenido.setText(readTextFromUri(archivo));
+            }catch (IOException e){
+                Toast.makeText(this, "Hubo un error al obtner el texto del archivo", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private String readTextFromUri(Uri uri) throws IOException{
+        InputStream inputStream = getContentResolver().openInputStream(uri);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder stringBuilder = new StringBuilder();
+        String linea;
+        while ((linea = reader.readLine()) != null){
+            stringBuilder.append(linea);
+        }
+        inputStream.close();
+        reader.close();
+        return stringBuilder.toString();
+    }
+
 }
+
