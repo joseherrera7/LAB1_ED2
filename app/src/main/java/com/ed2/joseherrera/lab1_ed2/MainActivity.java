@@ -193,9 +193,10 @@ private EditText ruta;
 
 
             FileOutputStream stream = new FileOutputStream(file);
-            stream.write(texto.getBytes());
-            stream.flush();
-            stream.close();
+            OutputStreamWriter writer=new OutputStreamWriter(stream,"UTF8");
+            writer.write(texto);
+            writer.flush();
+            writer.close();
         }
         catch (Exception ex)
         {
@@ -233,7 +234,7 @@ private EditText ruta;
         String salida="";
         InputStream inputStream = getContentResolver().openInputStream(uri);
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream,"UTF8"));
 
 
         int cha;

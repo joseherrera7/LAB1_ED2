@@ -77,7 +77,7 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
         paraimprimir=new ArrayList<>();
         increment(texto);
         Nodo raiz=new Nodo();
-       pasarparaimprimir();
+      pasarparaimprimir();
         while (nodelist.size()!=1){
 
            raiz= hacerarbol();
@@ -190,7 +190,7 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
             nuevo.setFreq(Integer.parseInt(letraandfreq[1]));
             nuevo.setLetra(letraandfreq[0].charAt(0));
             nuevo.setOrdenaparicion(i);
-            nodelist.add(0,nuevo);
+            nodelist.add(nuevo);
         }
 
 
