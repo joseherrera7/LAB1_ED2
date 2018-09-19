@@ -105,11 +105,7 @@ private EditText ruta;
         nombredesc= (EditText) findViewById(R.id.nombredesco);
         rutadesc= (EditText) findViewById(R.id.rutadescomp);
         Descomprimir=(Button) findViewById(R.id.descomprimir);
-        final String entrada="hjdgashdgasdhsajg ashdjgsadhasgdjhs hgdasjhdgsajhdgsa jfdsajgdgsajhd hgsajdgdhsgd \n" +
-                "hdgsahdgasjhdgsajgdh\n" +
-                "khgshdgsahdgskdhkj jhsgdsahdg" +
-                "dhsgdjsgad" +
-                "kjhjkhjk";
+
         btnCargarArchivo =  (Button) findViewById(R.id.btnCargarDatos);
         btnCargarArchivo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,18 +200,26 @@ private EditText ruta;
         }
     }
 
-    private String readTextFromUri(Uri uri) throws IOException{
-        InputStream inputStream = getContentResolver().openInputStream(uri);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        StringBuilder stringBuilder = new StringBuilder();
-        String linea;
-        while ((linea = reader.readLine()) != null){
-            stringBuilder.append(linea);
+    private String readTextFromUri(Uri uri) throws IOException {
+        FileInputStream fis;
+        String content = "";
+        try {
+            fis = openFileInput(uri.getPath());
+            byte[] input = new byte[fis.available()];
+            while (fis.read(input) != -1) {
+
+                content += new String(input);
+            }}
+        catch(FileNotFoundException e){
+                e.printStackTrace();
+            }
+        catch(IOException e){
+                e.printStackTrace();
+            }
+            return content;
         }
-        inputStream.close();
-        reader.close();
-        return stringBuilder.toString();
+
     }
 
-}
+
 
