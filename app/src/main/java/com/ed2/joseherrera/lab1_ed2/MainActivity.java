@@ -49,6 +49,7 @@ private EditText ruta;
 
     String nArchivo ="";
     File elFile;
+    String bitacoraFile;
 
     TextView direcciontxt;
     TextView direccionhuff;
@@ -79,6 +80,7 @@ private EditText ruta;
             public void onClick(View v) {
 
                 Intent intento =new Intent(MainActivity.this,MisCompresiones.class);
+                intento.putExtra("parametro", bitacoraFile);
                 startActivity(intento);
             }
         });
@@ -259,14 +261,14 @@ private EditText ruta;
 
         float x1 = arcComprimido.length();
         float x2 = arcOriginal.length();
-        nArchivo += " Razon de compresion: "  + df.format(x1/x2);
+        nArchivo += ", Razon de compresion: "  + df.format(x1/x2);
     }
     public void FactorCompresion(File arcComprimido, File arcOriginal){
         DecimalFormat df = new DecimalFormat("#.00");
         float x1 = arcComprimido.length();
         float x2 = arcOriginal.length();
 
-        nArchivo += " Factor de compresion: "  + df.format(x2/x1);
+        nArchivo += ", Factor de compresion: "  + df.format(x2/x1);
     }
     public void PorcentajeCompresion(File arcComprimido, File arcOriginal){
         DecimalFormat df = new DecimalFormat("#.00");
@@ -277,9 +279,10 @@ private EditText ruta;
     }
 
     public void RealizarAcciones(){
+        nArchivo = "";
     File archivito = new File(elFile.getParent() + "/" + nombre.getText()+ ".txt");
     nArchivo += "Nombre del archivo: " + archivito.getName();
-    nArchivo += " Nombre del archivo comprimido: " + elFile.getName();
+    nArchivo += ", Nombre del archivo comprimido: " + elFile.getName();
     RazonCompresion(elFile, archivito);
     FactorCompresion(elFile, archivito);
     PorcentajeCompresion(elFile, archivito);
@@ -303,10 +306,8 @@ private EditText ruta;
         
         myDir.mkdirs();
         File file = new File(myDir, fname);
+        bitacoraFile = file.getPath();
 
-        if(file.exists()) {
-            file.delete();
-        }
 
         try
         {
