@@ -1,6 +1,5 @@
 package com.ed2.joseherrera.lab1_ed2;
 
-import android.content.Context;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import  android.content.Intent;
 
+
 import com.ed2.joseherrera.lab1_ed2.Huffman.Huffman;
 
 import android.Manifest.*;
@@ -20,13 +20,11 @@ import android.content.pm.*;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.File;
-import java.nio.file.Files;
 
 import android.view.View.OnClickListener;
 import java.io.*;
@@ -37,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 private EditText nombre;
 private EditText ruta;
     private EditText nombredesc;
+    Uri originalPath;
     private EditText rutadesc;
     ArrayList<String> Compresiones = new ArrayList<>();
 
@@ -48,9 +47,10 @@ private EditText ruta;
     String entry;
 
     String nArchivo ="";
-    File elFile;
+    File comprimido;
     String bitacoraFile;
-
+    String salida;
+    String original;
     TextView direcciontxt;
     TextView direccionhuff;
 
@@ -116,7 +116,10 @@ private EditText ruta;
                 try {
                     Huffman huffi = new Huffman(entry);
                     huffi.ejecutarHuffman();
+                    salida = huffi.escribirbinario(entry);
+                    original = entry;
                     ecribirhuffman(huffi.escribirbinario(entry), true);
+
                     Toast.makeText(MainActivity.this, "Su archivo se comprimio de manera correcta", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
 
@@ -191,7 +194,8 @@ private EditText ruta;
        }
         myDir.mkdirs();
         File file = new File(myDir, fname);
-        elFile = file;
+
+        comprimido = file;
         if(file.exists()) {
             file.delete();
         }
@@ -216,6 +220,7 @@ private EditText ruta;
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 123 && resultCode == RESULT_OK){
             archivo = data.getData();
+
             Toast.makeText(this, archivo.toString(), Toast.LENGTH_LONG).show();
             Toast.makeText(this, archivo.getPath(), Toast.LENGTH_LONG).show();
             try{
@@ -226,6 +231,7 @@ private EditText ruta;
 
                    direcciontxt.setText(archivo.getPath());
                    direccionhuff.setText("");
+                   originalPath = archivo;
                }else if(archivo.getPath().endsWith("huff")){
 
                    direccionhuff.setText(archivo.getPath());
@@ -252,10 +258,11 @@ private EditText ruta;
            cha=reader.read();
         }
         inputStream.close();
+
         reader.close();
         return salida;
     }
-    public void RazonCompresion(File arcComprimido, File arcOriginal){
+    public void RazonCompresion(String arcComprimido, String arcOriginal){
         DecimalFormat df = new DecimalFormat("#.00");
 
 
@@ -263,14 +270,14 @@ private EditText ruta;
         float x2 = arcOriginal.length();
         nArchivo += ", Razon de compresion: "  + df.format(x1/x2);
     }
-    public void FactorCompresion(File arcComprimido, File arcOriginal){
+    public void FactorCompresion(String arcComprimido, String arcOriginal){
         DecimalFormat df = new DecimalFormat("#.00");
         float x1 = arcComprimido.length();
         float x2 = arcOriginal.length();
 
         nArchivo += ", Factor de compresion: "  + df.format(x2/x1);
     }
-    public void PorcentajeCompresion(File arcComprimido, File arcOriginal){
+    public void PorcentajeCompresion(String arcComprimido, String arcOriginal){
         DecimalFormat df = new DecimalFormat("#.00");
         float x1 = arcComprimido.length();
         float x2 = arcOriginal.length();
@@ -280,12 +287,12 @@ private EditText ruta;
 
     public void RealizarAcciones(){
         nArchivo = "";
-    File archivito = new File(elFile.getParent() + "/" + nombre.getText()+ ".txt");
-    nArchivo += "Nombre del archivo: " + archivito.getName();
-    nArchivo += ", Nombre del archivo comprimido: " + elFile.getName();
-    RazonCompresion(elFile, archivito);
-    FactorCompresion(elFile, archivito);
-    PorcentajeCompresion(elFile, archivito);
+    File originalArchivo = new File(originalPath.getPath());
+    nArchivo += "Nombre del archivo: " + originalArchivo.getName();
+    nArchivo += ", Nombre del archivo comprimido: " + comprimido.getName();
+    RazonCompresion(salida, original);
+    FactorCompresion(salida, original);
+    PorcentajeCompresion(salida, original);
     Compresiones.add(nArchivo);
     escribirArchivo(Compresiones);
     }
