@@ -1,6 +1,10 @@
 package com.ed2.joseherrera.lab1_ed2.Huffman;
 
-public class Nodo {
+import android.support.annotation.NonNull;
+
+import java.util.Comparator;
+
+public class Nodo implements Comparable<Nodo>{
 
     private Character letra;
 
@@ -60,5 +64,10 @@ public class Nodo {
 
     public void setIzquierdo(Nodo izquierdo) {
         this.izquierdo = izquierdo;
+    }
+
+    @Override
+    public int compareTo(@NonNull Nodo other) {
+        return this.cifrado.compareTo(other.cifrado);
     }
 }

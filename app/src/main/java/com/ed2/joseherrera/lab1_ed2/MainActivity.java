@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import  android.content.Intent;
+import net.steamcrafted.loadtoast.*;
 
 import com.ed2.joseherrera.lab1_ed2.Huffman.Huffman;
 
@@ -241,16 +242,12 @@ private EditText ruta;
     private String readTextFromUri(Uri uri) throws IOException{
         String salida="";
         InputStream inputStream = getContentResolver().openInputStream(uri);
-
+       String cadena="";
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream,"UTF8"));
-
-
-        int cha;
-        cha=reader.read();
-        while (cha!=-1){
-           salida=salida+((char)cha);
-           cha=reader.read();
+        while((cadena = reader.readLine())!=null) {
+            salida=salida+cadena+"\n";
         }
+
         inputStream.close();
         reader.close();
         return salida;
