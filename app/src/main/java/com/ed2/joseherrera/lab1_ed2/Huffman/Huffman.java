@@ -4,6 +4,12 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+
+import com.ed2.joseherrera.lab1_ed2.avldictionary.Sortable;
+import com.ed2.joseherrera.lab1_ed2.avldictionary.SortableCharacter;
+import com.ed2.joseherrera.lab1_ed2.avldictionary.SortableString;
+import com.ed2.joseherrera.lab1_ed2.avldictionary.AVLDictionary;
+
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +22,9 @@ public class Huffman {
     private ArrayList<Nodo> paraimprimir;
  private String texto;
 private Nodo arbol;
-private HashMap<Character,String> characterandbinary=new HashMap<>();
+private AVLDictionary<Character,SortableString > characterandbinaryfordesc=new AVLDictionary<>();
+    private AVLDictionary<String,SortableCharacter> characterandbinaryforcomp=new AVLDictionary<>();
+
     private ArrayList<Nodo> Letras=new ArrayList<Nodo>();
     public Huffman(String text) {
         texto=text;
@@ -108,11 +116,17 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
        //}else{
            return nodoin.compareTo(t1in);
        //}
-
     }
 });
-        for (char c : text.toCharArray()) {
-           binarios=binarios+characterandbinary.get(c);
+     int s=0;
+     Character c;
+        while (s!=text.length()) {
+
+
+            c=text.charAt(s);
+            SortableCharacter buscado = new SortableCharacter(c);
+            binarios = binarios + characterandbinaryforcomp.search(buscado);
+            s++;
         }
         for (Nodo x:paraimprimir) {
             salida=salida+x.getLetra()+"|||"+String.valueOf(x.getFreq())+"|||||";
@@ -156,8 +170,10 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
 
     public void tomarhojas(Nodo base){
         if(base.getIzquierdo()==null&&base.getDerecho()==null){
-
-            characterandbinary.put(base.getLetra(),base.getCifrado());
+          SortableString insertar=new SortableString(base.getCifrado());
+            SortableCharacter insertarch=new SortableCharacter(base.getLetra());
+            characterandbinaryforcomp.insert(insertarch,base.getCifrado());
+            characterandbinaryfordesc.insert(insertar,base.getLetra());
             Letras.add(base);
         }else{
 
@@ -171,7 +187,7 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
 
     public String escribirdescomp(String text) {
       nodelist=new ArrayList<>();
-      characterandbinary=new HashMap<>();
+
 
        return descifrar(descomprimirhuffman(text));
 
@@ -206,8 +222,10 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
         arbol=raiz;
 
         int i=0;
-        for (char c:parts[parts.length-1].toCharArray()) {
-            if(parts[parts.length-1].endsWith(String.valueOf(c))&&(i==parts[parts.length-1].length())){
+        Character c;
+        while (i!=parts[parts.length-1].length()){
+            c=parts[parts.length-1].charAt(i);
+            if(parts[parts.length-1].endsWith(String.valueOf(c))&&(i==parts[parts.length-1].length()-1)){
                binary+= convertirASCII(c,true)   ;
             }else{
                 binary+=convertirASCII(c,false)   ;
@@ -249,16 +267,21 @@ private HashMap<Character,String> characterandbinary=new HashMap<>();
 
         String retorno="";
         String ingreso="";
-        for (Character c:binario.toCharArray()) {
+        int s=0; Character c;
+        while (s!=binario.length()-1){
 
 
-                ingreso+=c;
-                if(characterandbinary.containsValue(ingreso)){
 
-                    retorno+=getKeyFromValue(characterandbinary,ingreso);
+            SortableString buscado=new SortableString(ingreso);
+                if(characterandbinaryfordesc.search((buscado))!=null){
+
+                    retorno+= characterandbinaryfordesc.search(buscado);
                     ingreso="";
                 }
 
+                c=binario.charAt(s);
+            ingreso+=c;
+                  s++;
 
         }
         return retorno;
