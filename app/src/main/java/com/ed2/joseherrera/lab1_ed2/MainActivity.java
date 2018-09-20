@@ -31,23 +31,27 @@ import java.nio.file.Files;
 
 import android.view.View.OnClickListener;
 import java.io.*;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 private EditText nombre;
 private EditText ruta;
     private EditText nombredesc;
     private EditText rutadesc;
+    ArrayList<String> Compresiones = new ArrayList<>();
 
     private static final int SOLICITUD_PERMISO_storage = 1;
 
     private Button btnCargarArchivo;
-    private Button Descomprimir; Button buscarArchivo; TextView contenido;
+    private Button Descomprimir; Button buscarArchivo;
 
     String entry;
-    String prueba="";
-    String nArchivo = "data.txt";
-    Context ctx = this;
-    FileOutputStream fos;
-    FileInputStream fis;
+
+    String nArchivo ="";
+    File elFile;
+    String bitacoraFile;
+
     TextView direcciontxt;
     TextView direccionhuff;
 
@@ -75,7 +79,9 @@ private EditText ruta;
         btnCompresiones.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intento =new Intent(MainActivity.this,MisCompresiones.class);
+                intento.putExtra("parametro", bitacoraFile);
                 startActivity(intento);
             }
         });
@@ -127,6 +133,7 @@ private EditText ruta;
                     Huffman huffi=new Huffman(entry);
                     ecribirhuffman( huffi.escribirdescomp(entry),false);
                     Toast.makeText(MainActivity.this,"Se descomprimio correctamente su archivo",Toast.LENGTH_SHORT).show();
+                    RealizarAcciones();
                 }catch (Exception e){
 
                     Toast.makeText(MainActivity.this,"Algo salio mal :( Su archivo no se descomprimio",Toast.LENGTH_SHORT).show();
@@ -185,6 +192,7 @@ private EditText ruta;
        }
         myDir.mkdirs();
         File file = new File(myDir, fname);
+        elFile = file;
         if(file.exists()) {
             file.delete();
         }
@@ -243,6 +251,75 @@ private EditText ruta;
         inputStream.close();
         reader.close();
         return salida;
+    }
+    public void RazonCompresion(File arcComprimido, File arcOriginal){
+        DecimalFormat df = new DecimalFormat("#.00");
+
+
+        float x1 = arcComprimido.length();
+        float x2 = arcOriginal.length();
+        nArchivo += ", Razon de compresion: "  + df.format(x1/x2);
+    }
+    public void FactorCompresion(File arcComprimido, File arcOriginal){
+        DecimalFormat df = new DecimalFormat("#.00");
+        float x1 = arcComprimido.length();
+        float x2 = arcOriginal.length();
+
+        nArchivo += ", Factor de compresion: "  + df.format(x2/x1);
+    }
+    public void PorcentajeCompresion(File arcComprimido, File arcOriginal){
+        DecimalFormat df = new DecimalFormat("#.00");
+        float x1 = arcComprimido.length();
+        float x2 = arcOriginal.length();
+
+        nArchivo += " Porcentaje de compresion: "  + df.format(x2/x1*100);
+    }
+
+    public void RealizarAcciones(){
+        nArchivo = "";
+    File archivito = new File(elFile.getParent() + "/" + nombre.getText()+ ".txt");
+    nArchivo += "Nombre del archivo: " + archivito.getName();
+    nArchivo += ", Nombre del archivo comprimido: " + elFile.getName();
+    RazonCompresion(elFile, archivito);
+    FactorCompresion(elFile, archivito);
+    PorcentajeCompresion(elFile, archivito);
+    Compresiones.add(nArchivo);
+    escribirArchivo(Compresiones);
+    }
+    public void escribirArchivo(ArrayList array){
+        String texto = "";
+        for (Object hola: array) {
+            texto += hola.toString() +"\n";
+        }
+
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir ;
+
+        String fname;
+        
+            myDir = new File(root + ruta.getText());
+            fname = "bitacora.bitacora";
+
+        
+        myDir.mkdirs();
+        File file = new File(myDir, fname);
+        bitacoraFile = file.getPath();
+
+
+        try
+        {
+
+
+            FileOutputStream stream = new FileOutputStream(file);
+            OutputStreamWriter writer=new OutputStreamWriter(stream,"UTF8");
+            writer.write(texto);
+            writer.flush();
+            writer.close();
+        }
+        catch (Exception ex)
+        {
+            Log.e("Ficheros", "Error al escribir fichero en la memoria interna "+ex.getMessage());
+        }
     }
 
 }
