@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import  android.content.Intent;
-import net.steamcrafted.loadtoast.*;
+
 
 import com.ed2.joseherrera.lab1_ed2.Huffman.Huffman;
 
