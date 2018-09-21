@@ -247,16 +247,12 @@ private EditText ruta;
     private String readTextFromUri(Uri uri) throws IOException{
         String salida="";
         InputStream inputStream = getContentResolver().openInputStream(uri);
-
+       String cadena="";
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream,"UTF8"));
-
-
-        int cha;
-        cha=reader.read();
-        while (cha!=-1){
-           salida=salida+((char)cha);
-           cha=reader.read();
+        while((cadena = reader.readLine())!=null) {
+            salida=salida+cadena+"\n";
         }
+
         inputStream.close();
 
         reader.close();
