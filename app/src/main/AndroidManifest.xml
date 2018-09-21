@@ -18,7 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MisCompresiones"></activity>
+        <activity android:name=".MisCompresiones" />
+        <activity android:name=".LZW"></activity>
     </application>
 
 </manifest>
