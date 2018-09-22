@@ -7,11 +7,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import  android.content.Intent;
 
 
 import com.ed2.joseherrera.lab1_ed2.Huffman.Huffman;
+import com.ed2.joseherrera.lab1_ed2.LZW.LZW;
 
 import android.Manifest.*;
 import android.os.Environment;
@@ -30,29 +32,31 @@ import android.view.View.OnClickListener;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-private EditText nombre;
-private EditText ruta;
-    private EditText nombredesc;
+    private EditText name;
+    private EditText route;
+    private EditText decedentName;
     Uri originalPath;
-    private EditText rutadesc;
-    ArrayList<String> Compresiones = new ArrayList<>();
+    private EditText decedentRoute;
+    ArrayList<String> compressions = new ArrayList<>();
 
     private static final int SOLICITUD_PERMISO_storage = 1;
 
-    private Button btnCargarArchivo;
-    private Button Descomprimir; Button buscarArchivo;
+    private Button buttonToCompress;
+    private Button buttonToDecompress; Button buttonSearchArchive;
 
     String entry;
 
-    String nArchivo ="";
+    String nameArchive ="";
     File comprimido;
     String bitacoraFile;
     String salida;
     String original;
     TextView direcciontxt;
     TextView direccionhuff;
+    Switch compressionMethod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +64,10 @@ private EditText ruta;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button btnCompresiones = (Button) findViewById(R.id.btnMisCompresiones);
-        buscarArchivo = (Button)findViewById(R.id.buttonBuscarArchivo);
+        buttonSearchArchive = (Button)findViewById(R.id.buttonBuscarArchivo);
+        compressionMethod = (Switch) findViewById(R.id.switch1);
 
-
-        buscarArchivo.setOnClickListener(new View.OnClickListener() {
+        buttonSearchArchive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intento = new Intent()
@@ -98,29 +102,48 @@ private EditText ruta;
 
         direccionhuff=(TextView) findViewById(R.id.nombrehuff);
                 direcciontxt=(TextView) findViewById(R.id.nombretxt);
-        nombre = (EditText) findViewById(R.id.nombre);
-        ruta = (EditText) findViewById(R.id.ruta);
-        nombredesc= (EditText) findViewById(R.id.nombredesco);
-        rutadesc= (EditText) findViewById(R.id.rutadescomp);
-        Descomprimir=(Button) findViewById(R.id.descomprimir);
-        final String entrada="hjdgashdgasdhsajg ashdjgsadhasgdjhs hgdasjhdgsajhdgsa jfdsajgdgsajhd hgsajdgdhsgd \n" +
-                "hdgsahdgasjhdgsajgdh\n" +
-                "khgshdgsahdgskdhkj jhsgdsahdg" +
-                "dhsgdjsgad" +
-                "kjhjkhjk";
-        btnCargarArchivo =  (Button) findViewById(R.id.btnCargarDatos);
-        btnCargarArchivo.setOnClickListener(new View.OnClickListener() {
+        name = (EditText) findViewById(R.id.nombre);
+        route = (EditText) findViewById(R.id.ruta);
+        decedentName = (EditText) findViewById(R.id.nombredesco);
+        decedentRoute = (EditText) findViewById(R.id.rutadescomp);
+        buttonToDecompress =(Button) findViewById(R.id.descomprimir);
+
+        buttonToCompress =  (Button) findViewById(R.id.btnCargarDatos);
+        buttonToCompress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 try {
-                    Huffman huffi = new Huffman(entry);
-                    huffi.ejecutarHuffman();
-                    salida = huffi.escribirbinario(entry);
-                    original = entry;
-                    ecribirhuffman(huffi.escribirbinario(entry), true);
+                    if(compressionMethod.isChecked()){
 
-                    Toast.makeText(MainActivity.this, "Su archivo se comprimio de manera correcta", Toast.LENGTH_SHORT).show();
+                        LZW compressionByLZW = new LZW();
+                        original = entry;
+                        StringBuffer stringBuffer = new StringBuffer();
+                        int bitLength = entry.length();
+                        List<Integer> lista = compressionByLZW.Encode_string(entry, bitLength);
+                        StringBuilder sb = new StringBuilder();
+                        for (Integer item: lista
+                             ) {
+                            sb.append(item);
+                        }
+                        String text = sb.toString();
+
+
+
+                        CreateLZWFile(text);
+                        salida = text;
+                        Toast.makeText(MainActivity.this, "Su archivo se comprimio de manera correcta", Toast.LENGTH_SHORT).show();
+
+                    }
+                    else {
+                        Huffman huffi = new Huffman(entry);
+                        huffi.ejecutarHuffman();
+                        salida = huffi.escribirbinario(entry);
+                        original = entry;
+                        WriteHuffman(huffi.escribirbinario(entry), true);
+
+                        Toast.makeText(MainActivity.this, "Su archivo se comprimio de manera correcta", Toast.LENGTH_SHORT).show();
+                    }
                 } catch (Exception e) {
 
                     Toast.makeText(MainActivity.this, "Algo salio mal :( Su archivo no se comprimio", Toast.LENGTH_SHORT).show();
@@ -128,14 +151,23 @@ private EditText ruta;
             } });
 
 
-        Descomprimir.setOnClickListener(new OnClickListener() {
+        buttonToDecompress.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 try{
-                    Huffman huffi=new Huffman(entry);
-                    ecribirhuffman( huffi.escribirdescomp(entry),false);
-                    Toast.makeText(MainActivity.this,"Se descomprimio correctamente su archivo",Toast.LENGTH_SHORT).show();
-                    RealizarAcciones();
+                    if(compressionMethod.isChecked()){
+                        int bitLength = entry.length();
+                        LZW compressionByLZW = new LZW();
+                        CreateDecodedFile(compressionByLZW.Decode_String(entry, bitLength).toString());
+                        RealizarAcciones();
+                        Toast.makeText(MainActivity.this, "Se descomprimio correctamente su archivo", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Huffman huffi = new Huffman(entry);
+                        WriteHuffman(huffi.escribirdescomp(entry), false);
+                        Toast.makeText(MainActivity.this, "Se descomprimio correctamente su archivo", Toast.LENGTH_SHORT).show();
+                        RealizarAcciones();
+                    }
                 }catch (Exception e){
 
                     Toast.makeText(MainActivity.this,"Algo salio mal :( Su archivo no se descomprimio",Toast.LENGTH_SHORT).show();
@@ -178,18 +210,80 @@ private EditText ruta;
 
     }
 
-    public void ecribirhuffman(String texto,boolean huff){
+    private void CreateDecodedFile(String decoded_values) throws IOException {
+
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir ;
+
+        String fname;
+
+        myDir = new File(root + decedentRoute.getText());
+        fname = decedentName.getText() + ".txt";
+
+        myDir.mkdirs();
+        File file = new File(myDir, fname);
+
+
+        FileOutputStream stream = new FileOutputStream(file);
+        OutputStreamWriter out =new OutputStreamWriter(stream, "UTF-8");
+        if(file.exists()) {
+            file.delete();
+        }
+
+        try {
+           out.write(decoded_values);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        out.flush();
+        out.close();
+    }
+
+    private void CreateLZWFile(String encoded_values) throws IOException {
+
+
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir ;
+
+        String fname;
+
+            myDir = new File(root + route.getText());
+            fname = name.getText() + ".lzw";
+
+        myDir.mkdirs();
+        File file = new File(myDir, fname);
+
+        comprimido = file;
+
+        if(file.exists()) {
+            file.delete();
+        }
+        try
+        {
+            FileOutputStream stream = new FileOutputStream(file);
+            OutputStreamWriter writer=new OutputStreamWriter(stream,"UTF-8");
+            writer.write(encoded_values);
+            writer.flush();
+            writer.close();
+        }
+        catch (Exception ex)
+        {
+            Log.e("Ficheros", "Error al escribir fichero en la memoria interna "+ex.getMessage());
+        }
+    }
+    public void WriteHuffman(String texto, boolean huff){
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir ;
 
         String fname;
         if(huff){
-            myDir = new File(root + ruta.getText());
-           fname = nombre.getText() + ".huff";
+            myDir = new File(root + route.getText());
+           fname = name.getText() + ".huff";
 
        }else{
-            myDir = new File(root + rutadesc.getText());
-            fname = nombredesc.getText() + ".txt";
+            myDir = new File(root + decedentRoute.getText());
+            fname = decedentName.getText() + ".txt";
 
        }
         myDir.mkdirs();
@@ -205,7 +299,7 @@ private EditText ruta;
 
 
             FileOutputStream stream = new FileOutputStream(file);
-            OutputStreamWriter writer=new OutputStreamWriter(stream,"UTF8");
+            OutputStreamWriter writer=new OutputStreamWriter(stream,"UTF-8");
             writer.write(texto);
             writer.flush();
             writer.close();
@@ -248,7 +342,7 @@ private EditText ruta;
         String salida="";
         InputStream inputStream = getContentResolver().openInputStream(uri);
        String cadena="";
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream,"UTF8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
         while((cadena = reader.readLine())!=null) {
             salida=salida+cadena+"\n";
         }
@@ -264,33 +358,33 @@ private EditText ruta;
 
         float x1 = arcComprimido.length();
         float x2 = arcOriginal.length();
-        nArchivo += ", Razon de compresion: "  + df.format(x1/x2);
+        nameArchive += ", Razon de compresion: "  + df.format(x1/x2);
     }
     public void FactorCompresion(String arcComprimido, String arcOriginal){
         DecimalFormat df = new DecimalFormat("#.00");
         float x1 = arcComprimido.length();
         float x2 = arcOriginal.length();
 
-        nArchivo += ", Factor de compresion: "  + df.format(x2/x1);
+        nameArchive += ", Factor de compresion: "  + df.format(x2/x1);
     }
     public void PorcentajeCompresion(String arcComprimido, String arcOriginal){
         DecimalFormat df = new DecimalFormat("#.00");
         float x1 = arcComprimido.length();
         float x2 = arcOriginal.length();
 
-        nArchivo += " Porcentaje de compresion: "  + df.format(x2/x1*100);
+        nameArchive += " Porcentaje de compresion: "  + df.format(x2/x1*100);
     }
 
     public void RealizarAcciones(){
-        nArchivo = "";
+        nameArchive = "";
     File originalArchivo = new File(originalPath.getPath());
-    nArchivo += "Nombre del archivo: " + originalArchivo.getName();
-    nArchivo += ", Nombre del archivo comprimido: " + comprimido.getName();
+    nameArchive += "Nombre del archivo: " + originalArchivo.getName();
+    nameArchive += ", Nombre del archivo comprimido: " + comprimido.getName();
     RazonCompresion(salida, original);
     FactorCompresion(salida, original);
     PorcentajeCompresion(salida, original);
-    Compresiones.add(nArchivo);
-    escribirArchivo(Compresiones);
+    compressions.add(nameArchive);
+    escribirArchivo(compressions);
     }
     public void escribirArchivo(ArrayList array){
         String texto = "";
@@ -303,7 +397,7 @@ private EditText ruta;
 
         String fname;
         
-            myDir = new File(root + ruta.getText());
+            myDir = new File(root + route.getText());
             fname = "bitacora.bitacora";
 
         
@@ -317,7 +411,7 @@ private EditText ruta;
 
 
             FileOutputStream stream = new FileOutputStream(file);
-            OutputStreamWriter writer=new OutputStreamWriter(stream,"UTF8");
+            OutputStreamWriter writer=new OutputStreamWriter(stream,"UTF-8");
             writer.write(texto);
             writer.flush();
             writer.close();

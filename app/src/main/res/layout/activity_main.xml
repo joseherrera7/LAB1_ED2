@@ -11,14 +11,13 @@
         android:layout_width="136dp"
         android:layout_height="49dp"
         android:layout_marginBottom="13dp"
-        android:layout_marginEnd="19dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="19dp"
-        android:layout_marginStart="50dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
         android:text="comprimir .txt"
         app:layout_constraintBottom_toTopOf="@+id/rutadescomp"
         app:layout_constraintEnd_toStartOf="@+id/buttonBuscarArchivo"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nombre" />
 
@@ -137,17 +136,14 @@
         android:layout_width="161dp"
         android:layout_height="63dp"
         android:layout_marginBottom="13dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginStart="30dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="24dp"
         android:text="Buscar archivo .huff o .txt"
         app:layout_constraintBottom_toTopOf="@+id/rutadescomp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnCargarDatos"
         app:layout_constraintTop_toBottomOf="@+id/nombre"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/nombrehuff"
@@ -182,5 +178,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nombre"
         app:layout_constraintVertical_bias="0.529" />
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="wrap_content"
+        android:layout_height="23dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Huffman/LZW"
+        app:layout_constraintBottom_toTopOf="@+id/descomprimir"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nombredesco" />
 
 </android.support.constraint.ConstraintLayout>
