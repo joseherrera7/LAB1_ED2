@@ -118,18 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
                         LZW compressionByLZW = new LZW();
                         original = entry;
-                        StringBuffer stringBuffer = new StringBuffer();
-                        int bitLength = entry.length();
-                        List<Integer> lista = compressionByLZW.Encode_string(entry, bitLength);
-                        StringBuilder sb = new StringBuilder();
-                        for (Integer item: lista
-                             ) {
-                            sb.append(item);
-                        }
-                        String text = sb.toString();
-
-
-
+                        String text = compressionByLZW.Encode_string(entry);
                         CreateLZWFile(text);
                         salida = text;
                         Toast.makeText(MainActivity.this, "Su archivo se comprimio de manera correcta", Toast.LENGTH_SHORT).show();
@@ -156,9 +145,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try{
                     if(compressionMethod.isChecked()){
-                        int bitLength = entry.length();
+
                         LZW compressionByLZW = new LZW();
-                        CreateDecodedFile(compressionByLZW.Decode_String(entry, bitLength).toString());
+                        String texto = compressionByLZW.Decode_String(entry).toString();
+                        CreateDecodedFile(texto);
                         RealizarAcciones();
                         Toast.makeText(MainActivity.this, "Se descomprimio correctamente su archivo", Toast.LENGTH_SHORT).show();
                     }
@@ -223,21 +213,23 @@ public class MainActivity extends AppCompatActivity {
         myDir.mkdirs();
         File file = new File(myDir, fname);
 
+        comprimido = file;
 
-        FileOutputStream stream = new FileOutputStream(file);
-        OutputStreamWriter out =new OutputStreamWriter(stream, "UTF-8");
         if(file.exists()) {
             file.delete();
         }
-
-        try {
-           out.write(decoded_values);
-        } catch (IOException e) {
-            e.printStackTrace();
+        try
+        {
+            FileOutputStream stream = new FileOutputStream(file);
+            OutputStreamWriter writer=new OutputStreamWriter(stream,"UTF-8");
+            writer.write(decoded_values);
+            writer.flush();
+            writer.close();
         }
-
-        out.flush();
-        out.close();
+        catch (Exception ex)
+        {
+            Log.e("Ficheros", "Error al escribir fichero en la memoria interna "+ex.getMessage());
+        }
     }
 
     private void CreateLZWFile(String encoded_values) throws IOException {

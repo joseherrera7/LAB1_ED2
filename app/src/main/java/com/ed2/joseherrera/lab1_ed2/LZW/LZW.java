@@ -5,6 +5,9 @@ package com.ed2.joseherrera.lab1_ed2.LZW;
 
 
 
+import android.content.IntentFilter;
+import android.support.design.widget.TabLayout;
+
 import java.io.BufferedReader;
 
 import java.io.FileInputStream;
@@ -18,7 +21,7 @@ import java.util.*;
 
 public class LZW {
 
-    private static double MAX_TABLE_SIZE; //Max Table size is based on the bit length input.
+
 
 
 
@@ -27,77 +30,102 @@ public class LZW {
      * @param input_string //Filename that is used for encoding.
       */
 
-    public List<Integer> Encode_string(String input_string, double Bit_Length) {
+    Map<String, Integer> Table = new HashMap<>();
+    Map<Integer, String> newTable = new HashMap<>();
 
-        MAX_TABLE_SIZE = Math.pow(2, Bit_Length);
+    public String Encode_string(String input_string) {
 
-        double table_Size =  255;
 
-        Map<String, Integer> TABLE = new HashMap<>();
+        String c;
+        String k;
+        String numbers = "";
 
-        for (int i = 0; i < 255 ; i++)
-            TABLE.put("" + (char) i, i);
 
-        String initString = "";
+        List<Character> charList = new ArrayList<>();
 
-        List<Integer> encoded_values = new ArrayList<>();
+        int value = 1;
+        for (char item: input_string.toCharArray()
+             ) {
+            if (!Table.containsKey(String.valueOf(item))){
+                Table.put(String.valueOf(item), value);
 
-        for (char symbol : input_string.toCharArray()) {
-            String Str_Symbol = initString + symbol;
-            if (TABLE.containsKey(Str_Symbol))
-                initString = Str_Symbol;
+                value++;
+            }
+            charList.add(item);
+        }
+        String out = "";
+        List<String> keys = new ArrayList(Table.keySet());
+        List<Integer> values = new ArrayList(Table.values());
+        for (int i = 0; i<keys.size(); i++){
+            out+= keys.get(i) +"|||" + values.get(i) +"||||";
+        }
+
+        for (int i = 0; i<charList.size(); i++) {
+            c = String.valueOf(charList.remove(0));
+            k = String.valueOf(charList.remove(1));
+            String ck = c+k;
+            if (Table.containsKey(ck)) {
+                c = ck;
+
+            }
             else {
-                encoded_values.add(TABLE.get(initString));
-
-                if(table_Size < MAX_TABLE_SIZE)
-                    TABLE.put(Str_Symbol, (int) table_Size++);
-                initString = "" + symbol;
+                Table.put(ck, value);
+                numbers += String.valueOf(convertToChar(Table.get(c)));
+                value++;
             }
         }
 
-        if (!initString.equals(""))
-            encoded_values.add(TABLE.get(initString));
 
-
-        return encoded_values;
-
+        out = out + "|||||" + numbers;
+        return  out;
     }
 
-    public StringBuffer Decode_String(String encodedValues, double bit_Length) throws IOException {
+    public String Decode_String(String encodedValues) throws IOException {
+
+        String cN;
+        String cV;
+
+        String numbers = "";
 
 
-        MAX_TABLE_SIZE = Math.pow(2, bit_Length);
+        List<String> charList = new ArrayList<>();
+        // Divide the file into the map and the encoded string
+        String[] parts = encodedValues.split("\\|\\|\\|\\|\\|");
+        String originalMap = parts[0];
+        String encoded = parts[1];
+        // Divide the map into key-value
+        String[] partsMap = originalMap.split("\\|\\|\\|\\|");
+        for (int i = 0; i<partsMap.length;i++){
+            String KeyValue[] = partsMap[i].split("\\|\\|\\|");
+            Integer key = Integer.parseInt(KeyValue[1]);
+            String value = KeyValue[0];
+            newTable.put(key, value);
+        }
+        for (char item: encoded.toCharArray()
+                ) {
 
+            charList.add((converToString(item)));
+        }
+        int value = newTable.size() + 1;
+        String out = "";
 
-        List<Integer> get_compress_values = new ArrayList<>();
-        int table_Size = 255;
+        cV = charList.remove(4);
+        out += newTable.get(Integer.parseInt(cV));
 
+        for (int i = 0; i<encoded.length()-1; i++) {
+            cN = charList.remove(4);
+           if (newTable.containsKey(Integer.parseInt(cN))){
+                out += newTable.get(Integer.parseInt(cN));
+                newTable.put(value, cV+cN);
+                cV = cN;
+                value++;
+           }
 
-        Map<Integer, String> TABLE = new HashMap<>();
-        for (int i = 0; i < 255; i++)
-            TABLE.put(i, "" + (char) i);
-
-
-        StringBuffer decoded_values = new StringBuffer(encodedValues);
-
-        String get_value_from_table = null;
-        for (int check_key : get_compress_values) {
-
-            if (TABLE.containsKey(check_key))
-                get_value_from_table = TABLE.get(check_key);
-            else if (check_key == table_Size)
-                get_value_from_table = encodedValues + encodedValues.charAt(0);
-
-            decoded_values.append(get_value_from_table);
-
-            if(table_Size < MAX_TABLE_SIZE )
-                TABLE.put(table_Size++, encodedValues + get_value_from_table.charAt(0));
-
-            encodedValues = get_value_from_table;
         }
 
-        return decoded_values;
 
+
+        return  out;
 
 
     }
@@ -106,6 +134,34 @@ public class LZW {
 @throws IOException
 */
 
+    private Map<String, Integer> sortDiccionary(Map<String, Integer> TABLE ){
+        Collection<String> strings = TABLE.keySet();
+        Map<String, Integer> newTable= new HashMap<>();
+        int value = 1;
+        List<String> StringList = new ArrayList<>(strings);
+        Collections.sort(StringList, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        });
+        for (String item:StringList
+             ) {
+            newTable.put(item, value);
+            value++;
+        }
+        return newTable;
+    }
+    public char convertToChar(Integer i){
+        int num = i.intValue();
+        char ch = (char) num;
+        return ch;
+    }
+    public String converToString(char ascii){
 
+        int number=(int) ascii;
+        return  String.valueOf(number);
+
+    }
 
 }
