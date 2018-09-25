@@ -74,12 +74,12 @@ public class LZW {
                 c = ck;
                 Activated = true;
                 if (i == size-1){
-                    numbers += String.valueOf(Character.toChars(IntegerTable.get(c)));
+                    numbers += String.valueOf((char)(int)(Table.get(c)));
                 }
             }
             else {
                 Table.put(ck, value);
-                numbers += String.valueOf((Table.get(c)));
+                numbers += String.valueOf((char)(int)(Table.get(c)));
                 value++;
                 Activated = false;
             }
@@ -91,13 +91,8 @@ public class LZW {
     }
 
     public String Decode_String(String encodedValues) throws IOException {
-
         String cN;
         String cV;
-
-
-
-
         List<String> charList = new ArrayList<>();
         // Divide the file into the map and the encoded string
         String encoded;
@@ -107,15 +102,12 @@ public class LZW {
         encoded = partsMap[partsMap.length - 1];
         for (String item: partsMap
              ) {
-
             KeyValue = item.split("\\|\\|\\|");
             if (!(KeyValue.length == 1)){
             Integer key = Integer.parseInt(KeyValue[1]);
             String value = KeyValue[0];
             newTable.put(key, value);}
         }{
-
-
         }
 
         for (char item: encoded.toCharArray()
@@ -128,20 +120,17 @@ public class LZW {
 
         cV = charList.remove(0);
         out += newTable.get(Integer.parseInt(cV));
-
         while(!charList.isEmpty()) {
             cN = charList.remove(0);
            if (newTable.containsKey(Integer.parseInt(cN))){
                 out += newTable.get(Integer.parseInt(cN));
-                newTable.put(value, cV+cN);
+                String entrada = newTable.get(cV) + newTable.get(cN);
+                newTable.put(value, entrada);
                 cV = cN;
                 value++;
            }
 
         }
-
-
-
         return  out;
 
 
