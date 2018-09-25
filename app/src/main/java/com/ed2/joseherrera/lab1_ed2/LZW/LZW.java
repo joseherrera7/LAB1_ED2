@@ -36,8 +36,8 @@ public class LZW {
     public String Encode_string(String input_string) {
 
 
-        String c;
-        String k;
+        String c = "";
+        String k = "";
         String numbers = "";
 
 
@@ -46,37 +46,47 @@ public class LZW {
         int value = 1;
         for (char item: input_string.toCharArray()
              ) {
+            if (!(item=='\n')){
             if (!Table.containsKey(String.valueOf(item))){
                 Table.put(String.valueOf(item), value);
 
                 value++;
             }
-            charList.add(item);
+            charList.add(item);}
         }
         String out = "";
+        Table = sortDiccionary(Table);
         List<String> keys = new ArrayList(Table.keySet());
         List<Integer> values = new ArrayList(Table.values());
         for (int i = 0; i<keys.size(); i++){
             out+= keys.get(i) +"|||" + values.get(i) +"||||";
         }
-
-        for (int i = 0; i<charList.size(); i++) {
-            c = String.valueOf(charList.remove(0));
-            k = String.valueOf(charList.remove(1));
+        int size = charList.size();
+        boolean Activated = false;
+        for (int i = 0; i<size; i++) {
+            if (!Activated || i ==0){
+            c = String.valueOf(charList.get(i));}
+            k = "";
+            if (!(i==size-1)){
+            k = String.valueOf(charList.get(i+1));}
             String ck = c+k;
             if (Table.containsKey(ck)) {
                 c = ck;
-
+                Activated = true;
+                if (i == size-1){
+                    numbers += String.valueOf(Character.toChars(IntegerTable.get(c)));
+                }
             }
             else {
                 Table.put(ck, value);
-                numbers += String.valueOf(convertToChar(Table.get(c)));
+                numbers += String.valueOf((Table.get(c)));
                 value++;
+                Activated = false;
             }
         }
 
 
-        out = out + "|||||" + numbers;
+        out = out + numbers;
         return  out;
     }
 
@@ -85,22 +95,29 @@ public class LZW {
         String cN;
         String cV;
 
-        String numbers = "";
+
 
 
         List<String> charList = new ArrayList<>();
         // Divide the file into the map and the encoded string
-        String[] parts = encodedValues.split("\\|\\|\\|\\|\\|");
-        String originalMap = parts[0];
-        String encoded = parts[1];
+        String encoded;
+        String KeyValue[] = null;
         // Divide the map into key-value
-        String[] partsMap = originalMap.split("\\|\\|\\|\\|");
-        for (int i = 0; i<partsMap.length;i++){
-            String KeyValue[] = partsMap[i].split("\\|\\|\\|");
+        String[] partsMap = encodedValues.split("\\|\\|\\|\\|");
+        encoded = partsMap[partsMap.length - 1];
+        for (String item: partsMap
+             ) {
+
+            KeyValue = item.split("\\|\\|\\|");
+            if (!(KeyValue.length == 1)){
             Integer key = Integer.parseInt(KeyValue[1]);
             String value = KeyValue[0];
-            newTable.put(key, value);
+            newTable.put(key, value);}
+        }{
+
+
         }
+
         for (char item: encoded.toCharArray()
                 ) {
 
@@ -109,11 +126,11 @@ public class LZW {
         int value = newTable.size() + 1;
         String out = "";
 
-        cV = charList.remove(4);
+        cV = charList.remove(0);
         out += newTable.get(Integer.parseInt(cV));
 
-        for (int i = 0; i<encoded.length()-1; i++) {
-            cN = charList.remove(4);
+        while(!charList.isEmpty()) {
+            cN = charList.remove(0);
            if (newTable.containsKey(Integer.parseInt(cN))){
                 out += newTable.get(Integer.parseInt(cN));
                 newTable.put(value, cV+cN);
@@ -145,13 +162,12 @@ public class LZW {
                 return o1.compareTo(o2);
             }
         });
-        for (String item:StringList
-             ) {
-            newTable.put(item, value);
-            value++;
+        for (int i = 1; i <= StringList.size(); i++){
+            newTable.put(StringList.get(i-1),i);
         }
         return newTable;
     }
+
     public char convertToChar(Integer i){
         int num = i.intValue();
         char ch = (char) num;

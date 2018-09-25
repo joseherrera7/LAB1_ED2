@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                     if(compressionMethod.isChecked()){
 
                         LZW compressionByLZW = new LZW();
-                        String texto = compressionByLZW.Decode_String(entry).toString();
+                        String texto = compressionByLZW.Decode_String(salida).toString();
                         CreateDecodedFile(texto);
                         RealizarAcciones();
                         Toast.makeText(MainActivity.this, "Se descomprimio correctamente su archivo", Toast.LENGTH_SHORT).show();
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                 new String[]{permission.WRITE_EXTERNAL_STORAGE},
                 SOLICITUD_PERMISO_storage);
 
-        Toast.makeText(this, "Porfavor concender permisos para almacenar en memoria", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Por favor concender permisos para almacenar en memoria", Toast.LENGTH_SHORT).show();
 
 
     }
@@ -324,6 +324,12 @@ public class MainActivity extends AppCompatActivity {
                    direcciontxt.setText("");
 
                 }
+               else if(archivo.getPath().endsWith("lzw")){
+
+                   direccionhuff.setText(archivo.getPath());
+                   direcciontxt.setText("");
+
+               }
             }catch (IOException e){
                 Toast.makeText(this, "Hubo un error al obtner el texto del archivo", Toast.LENGTH_LONG).show();
             }
