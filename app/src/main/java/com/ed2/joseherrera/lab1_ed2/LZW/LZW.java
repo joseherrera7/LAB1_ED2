@@ -44,16 +44,19 @@ public class LZW {
         List<Character> charList = new ArrayList<>();
 
         int value = 1;
-        for (char item: input_string.toCharArray()
+        char[] input = input_string.toCharArray();
+
+        for (char item: input
              ) {
-            if (!(item=='\n')){
+
             if (!Table.containsKey(String.valueOf(item))){
                 Table.put(String.valueOf(item), value);
 
                 value++;
             }
-            charList.add(item);}
+            charList.add(item);
         }
+
         String out = "";
         Table = sortDiccionary(Table);
         List<String> keys = new ArrayList(Table.keySet());
@@ -89,6 +92,14 @@ public class LZW {
         out = out + numbers;
         return  out;
     }
+    public static Object  getKeyFromValue(Map hm, Object value) {
+        for (Object o : hm.keySet()) {
+            if (hm.get(o).equals(value)) {
+                return o;
+            }
+        }
+        return null;
+    }
 
     public String Decode_String(String encodedValues) throws IOException {
         String cN;
@@ -109,7 +120,7 @@ public class LZW {
             newTable.put(key, value);}
         }{
         }
-
+        //newTable = sortNewDiccionary(newTable);
         for (char item: encoded.toCharArray()
                 ) {
 
@@ -122,13 +133,13 @@ public class LZW {
         out += newTable.get(Integer.parseInt(cV));
         while(!charList.isEmpty()) {
             cN = charList.remove(0);
-           if (newTable.containsKey(Integer.parseInt(cN))){
+            if (newTable.containsKey(Integer.parseInt(cN))){
                 out += newTable.get(Integer.parseInt(cN));
-                String entrada = newTable.get(cV) + newTable.get(cN);
+                String entrada = newTable.get(Integer.valueOf(cV)) + newTable.get(Integer.valueOf(cN)).charAt(0);
                 newTable.put(value, entrada);
                 cV = cN;
                 value++;
-           }
+            }
 
         }
         return  out;
@@ -153,6 +164,22 @@ public class LZW {
         });
         for (int i = 1; i <= StringList.size(); i++){
             newTable.put(StringList.get(i-1),i);
+        }
+        return newTable;
+    }
+    private Map<Integer, String> sortNewDiccionary(Map<Integer, String> TABLE ){
+        Collection<String> strings = TABLE.values();
+        Map<Integer, String> newTable= new HashMap<>();
+        int value = 1;
+        List<String> StringList = new ArrayList<>(strings);
+        Collections.sort(StringList, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        });
+        for (int i = 1; i <= StringList.size(); i++){
+            newTable.put(i, StringList.get(i-1));
         }
         return newTable;
     }
