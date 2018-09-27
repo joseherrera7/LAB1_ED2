@@ -61,8 +61,8 @@ public class LZW {
         Table = sortDiccionary(Table);
         List<String> keys = new ArrayList(Table.keySet());
         List<Integer> values = new ArrayList(Table.values());
-        for (int i = 0; i<keys.size(); i++){
-            out+= keys.get(i) +"|||" + values.get(i) +"||||";
+        for (int i = 1; i<=Table.size(); i++){
+            out+= getKeyFromValue(Table,i) +"|||" + i +"||||";
         }
         int size = charList.size();
         boolean Activated = false;

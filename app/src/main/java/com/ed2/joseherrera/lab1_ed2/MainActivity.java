@@ -30,11 +30,13 @@ import java.io.File;
 
 import android.view.View.OnClickListener;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static Charset UTF8=Charset.forName("UTF-8");
     private EditText name;
     private EditText route;
     private EditText decedentName;
@@ -221,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
         try
         {
             FileOutputStream stream = new FileOutputStream(file);
-            OutputStreamWriter writer=new OutputStreamWriter(stream,"UTF-8");
+            OutputStreamWriter writer=new OutputStreamWriter(stream,UTF8);
             writer.write(decoded_values);
             writer.flush();
             writer.close();
@@ -254,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
         try
         {
             FileOutputStream stream = new FileOutputStream(file);
-            OutputStreamWriter writer=new OutputStreamWriter(stream,"UTF-8");
+            OutputStreamWriter writer=new OutputStreamWriter(stream,UTF8);
             writer.write(encoded_values);
             writer.flush();
             writer.close();
@@ -291,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             FileOutputStream stream = new FileOutputStream(file);
-            OutputStreamWriter writer=new OutputStreamWriter(stream,"UTF-8");
+            OutputStreamWriter writer=new OutputStreamWriter(stream,UTF8);
             writer.write(texto);
             writer.flush();
             writer.close();
@@ -340,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
         String salida="";
         InputStream inputStream = getContentResolver().openInputStream(uri);
        String cadena="";
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream,UTF8));
         while((cadena = reader.readLine())!=null) {
             salida=salida+cadena+"\n";
         }
